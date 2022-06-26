@@ -10,7 +10,7 @@
   script:
     # build reports
     - ( phpcs --report=json || true ) | /root/scripts/phpcs-json-to-codequality.sh "$CI_PROJECT_DIR" > phpcs-codequality.json
-    - phpstan --error-format=gitlab > phpstan-codequality.json || true
+    - phpstan --error-format=gitlab analyse > phpstan-codequality.json || true
     # merge
     - jq -s "[.[][]]" *-codequality.json > codequality-report.json
   artifacts:

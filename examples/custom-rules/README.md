@@ -1,15 +1,15 @@
 # Configure additional / custom code quality rules
 
-## For phpcs
+## For phpcs - third party rule
 
-1. Add `tools/codequality` directory to the project.
-2. Install additional phpcs rules as specified in rules' documentation (for example, using composer).
+1. Create `tools/codequality` directory in the project.
+2. Install additional phpcs rules as specified in rules' documentation (for example, using composer) to this directory.
 3. Configure rules in `phpcs.xml`.
 4. Add `composer install` for `tools/codequality` to `.gitlab-ci.yml` prior to `phpcs` run. 
 
 Done!
 
-See `tools/codequality` contents example [here](tools-codequality).
+See `tools/codequality` contents example [here](phpcs).
 
 Additional rule `phpcs.xml` configuration example, along with limiting paths where this rule should be applied.
 
@@ -44,5 +44,28 @@ Additional rule `phpcs.xml` configuration example, along with limiting paths whe
     # install dependencies
     - cd tools/codequality && composer install && cd "$CI_PROJECT_DIR"
     # ... code quality tools execution ... 
+```
+
+## For phpstan - custom rule
+
+1. Create directory in the project repository for custom phpstan rules, for example `tools/codequality/phpstan`.
+2. Add your rules' files there.
+3. Create a `bootstrap.php` file containing `require()` for all your rule files or autoload them in other way.
+4. Add bootstrap file argument to `phpstan` invocation: `phpstan analyse -a tools/codequality/phpstan/bootstrap.php ...`
+
+Done!
+
+See examples [here](phpstan).
+
+`.gitlab-ci.yml` addition:
+
+```yaml
+.phpcs-codequality:
+  script:
+    # ... before phpstan ... 
+    # phpstan
+    - phpstan --error-format=gitlab analyse -a tools/codequality/phpstan/bootstrap.php > phpstan-codequality.json || true
+    #                             add this: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
+    # ... after phstan ...
 ```
 
