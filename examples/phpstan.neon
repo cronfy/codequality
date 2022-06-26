@@ -1,0 +1,27 @@
+parameters:
+  level: 0
+  # phpstan's cache. Add this directory to project's .gitignore.
+  tmpDir: tmp
+
+  # Check code quality in this paths.
+  paths:
+    # Project's code
+    - app
+    # Some code in the public folder
+    - public/api
+
+  # Code is not checked for quality here, but is loaded as dependencies 
+  # for the code mentioned above (required for statical code analysis).
+  # See https://phpstan.org/user-guide/discovering-symbols
+  scanDirectories:
+    - www/local/modules
+    - www/bitrix/modules/main/lib
+
+  excludePaths:
+    # Do not analyse code here
+    analyse:
+      - app/lib/ThirdParty/*
+    # Ignore completely
+    analyseAndScan:
+      - */migrations/*
+

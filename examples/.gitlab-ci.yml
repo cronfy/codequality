@@ -1,0 +1,32 @@
+
+#
+# Just copy and paste this configuration, no tuning required.
+# Project's runner must support docker.
+#
+
+# Base job settings
+.phpcs-codequality:
+  image: $CI_REGISTRY_IMAGE/codequality
+  script:
+    # build reports
+    - ( phpcs --report=json || true ) | /root/scripts/phpcs-json-to-codequality.sh "$CI_PROJECT_DIR" > phpcs-codequality.json
+    - phpstan --error-format=gitlab > phpstan-codequality.json || true
+    # merge
+    - jq -s "[.[][]]" *-codequality.json > codequality-report.json
+  artifacts:
+    reports:
+      codequality: codequality-report.json
+
+# Check code quality on MR to the develop branch.
+"Review MR":
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"
+  extends: .phpcs-codequality
+
+# Measure code quality on commit to the develop branch.
+# This is required for ability to compare develop branch code against Merge Requests code.
+"Measure code quality":
+  only:
+    - develop
+  extends: .phpcs-codequality
+

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail
+
+scriptRealpath="`realpath $0`"
+buildPath="`dirname "$scriptRealpath"`"
+"$buildPath"/image/build --quiet
+
+case "${1:-}" in
+	phpcs | phpcbf | phpstan)
+		docker run --mount type=bind,source="$(pwd)",target=/app codequality "$@" 
+		;;
+	"")
+		docker run -ti --mount type=bind,source="$(pwd)",target=/app codequality bash
+		;;
+	*)
+		docker run --mount type=bind,source="$(pwd)",target=/app codequality "$@"
+		;;
+esac

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail
+
+cd "`dirname $0`"
+
+function quietBuild() {
+	docker build -q --tag codequality . > /dev/null
+}
+
+function build() {
+	docker build --tag codequality .
+}
+
+if [ "${1:-}" = "--quiet" ] ; then
+	buildCommand=quietBuild
+else
+	buildCommand=build
+fi
+
+$buildCommand || {
+        echo failed to build codequality
+        exit 1
+} >&2
+
