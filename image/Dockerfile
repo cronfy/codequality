@@ -18,6 +18,10 @@ RUN ln -nfs /root/.composer/vendor/bin/phpcbf /usr/local/bin/
 RUN composer global require phpstan/phpstan "^1.7.0"
 RUN ln -nfs /root/.composer/vendor/bin/phpstan /usr/local/bin/
 
+# psalm
+RUN composer global require vimeo/psalm "^4.25.0"
+RUN ln -nfs /root/.composer/vendor/bin/psalm /usr/local/bin/
+
 COPY assets/scripts /root/scripts
 
 COPY assets/docker-entrypoint.sh /
